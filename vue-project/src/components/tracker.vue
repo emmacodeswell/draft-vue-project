@@ -41,7 +41,7 @@
   <div>
     <h1>Crypto Tracker</h1>
 
-    <div v-if="isLoading">
+    <div v-if="isLoading" class="loading">
       <p>Loading...</p>
     </div>
 
@@ -64,7 +64,46 @@
 </template>
 
 <style>
+    div {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    text-align: center;
+    color: #333;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+
+  p {
+    margin: 0;
+    color: #555;
+  }
+
   .error {
     color: red;
+  }
+
+  .loading {
+    text-align: center;
+    font-size: 18px;
+    color: #777;
   }
 </style> 
