@@ -4,6 +4,7 @@
 
   const cryptoList = ref([])
   const error = ref('')
+  const isLoading = ref(true) // Add a loading state
 
   onMounted(async () => {
     await fetchCryptoList()
@@ -24,6 +25,9 @@
     } catch (error) {
       console.error('Error fetching cryptocurrency data:', error)
       setError('Failed to fetch cryptocurrency data. Please try again later.')
+    } finally {
+    // Set isLoading to false regardless of success or failure
+    isLoading.value = false
     }
   }
 
@@ -34,20 +38,28 @@
 </script>
 
 <template>
-  <h1>Crypto Tracker</h1>
+  <div>
+    <h1>Crypto Tracker</h1>
 
-  <div v-if="error">
-    <p class="error">{{ error }}</p>
-  </div>
+    <div v-if="isLoading">
+      <p>Loading...</p>
+    </div>
 
-  <div v-else>
-    <ul>
-      <li v-for="crypto in cryptoList" :key="crypto.id">
-        <p>{{ crypto.name }} ({{ crypto.symbol }})</p>
-        <p>Price: ${{ crypto.current_price }}</p>
-        <p>Market Cap: ${{ crypto.market_cap }}</p>
-      </li>
-    </ul>
+    <div v-else>
+      <div v-if="error">
+        <p class="error">{{ error }}</p>
+      </div>
+
+      <div v-else>
+        <ul>
+          <li v-for="crypto in cryptoList" :key="crypto.id">
+            <p>{{ crypto.name }} ({{ crypto.symbol }})</p>
+            <p>Price: ${{ crypto.current_price }}</p>
+            <p>Market Cap: ${{ crypto.market_cap }}</p>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
