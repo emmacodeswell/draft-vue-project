@@ -6,6 +6,7 @@ const cryptoList = ref([])
 const error = ref('')
 const isLoading = ref(true) // Add a loading state
 const searchTerm = ref('')
+const selectedCrypto = ref(null)
 
 onMounted(async () => {
   await fetchCryptoList()
@@ -36,17 +37,30 @@ const setError = (errorMessage: string) => {
   error.value = errorMessage
 }
 
-const filteredCryptoList = ref([]);
+const filteredCryptoList = ref([])
 
 // Watch for changes in the searchTerm and update the filteredCryptoList accordingly
-watch(() => {
-  const normalizedSearchTerm = searchTerm.value.toLowerCase();
-  filteredCryptoList.value = cryptoList.value.filter(
-    (crypto) =>
-      crypto.name.toLowerCase().includes(normalizedSearchTerm) ||
-      crypto.symbol.toLowerCase().includes(normalizedSearchTerm)
-  );
-}, { immediate: true }); // Add immediate: true to trigger the watch immediately
+watch(
+  () => {
+    const normalizedSearchTerm = searchTerm.value.toLowerCase()
+    filteredCryptoList.value = cryptoList.value.filter(
+      (crypto) =>
+        crypto.name.toLowerCase().includes(normalizedSearchTerm) ||
+        crypto.symbol.toLowerCase().includes(normalizedSearchTerm)
+    )
+  },
+  { immediate: true }
+) // Add immediate: true to trigger the watch immediately
+
+// Show detailed view for a selected cryptocurrency
+const showDetails = (crypto) => {
+  selectedCrypto.value = crypto
+}
+
+// Close the detailed view modal
+const closeDetails = () => {
+  selectedCrypto.value = null
+}
 </script>
 
 <template>
@@ -69,11 +83,23 @@ watch(() => {
       <div v-else>
         <ul>
           <li v-for="crypto in filteredCryptoList" :key="crypto.id">
-            <p>{{ crypto.name }} ({{ crypto.symbol }})</p>
-            <p>Price: ${{ crypto.current_price }}</p>
-            <p>Market Cap: ${{ crypto.market_cap }}</p>
+            <div @click="showDetails(crypto)">
+              <p>{{ crypto.name }} ({{ crypto.symbol }})</p>
+              <p>Price: ${{ crypto.current_price }}</p>
+              <p>Market Cap: ${{ crypto.market_cap }}</p>
+            </div>
           </li>
         </ul>
+      </div>
+    </div>
+
+    <!-- Detailed view modal -->
+    <div v-if="selectedCrypto" class="modal" @click="closeDetails">
+      <div class="modal-content">
+        <span class="close" @click="closeDetails">&times;</span>
+        <h2>{{ selectedCrypto.name }} ({{ selectedCrypto.symbol }})</h2>
+        <p>Price: ${{ selectedCrypto.current_price }}</p>
+        <p>Market Cap: ${{ selectedCrypto.market_cap }}</p>
       </div>
     </div>
   </div>
@@ -132,4 +158,38 @@ input {
   box-sizing: border-box;
 }
 
+/* Modal styles */
+.modal {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+}
 </style>
