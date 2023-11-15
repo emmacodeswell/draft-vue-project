@@ -3,6 +3,7 @@
   import axios from 'axios'
 
   const cryptoList = ref([])
+  const error = ref('')
 
   onMounted(async () => {
     await fetchCryptoList()
@@ -22,19 +23,36 @@
       cryptoList.value = response.data
     } catch (error) {
       console.error('Error fetching cryptocurrency data:', error)
+      setError('Failed to fetch cryptocurrency data. Please try again later.')
     }
   }
+
+  const setError = (errorMessage: string) => {
+  error.value = errorMessage;
+}
+
 </script>
 
 <template>
-  <div>
-   <h1>Crypto Tracker</h1>
-   <ul>
-     <li v-for="crypto in cryptoList" :key="crypto.id">
-       <p>{{ crypto.name }} ({{ crypto.symbol }})</p>
-       <p>Price: ${{ crypto.current_price }}</p>
-       <p>Market Cap: ${{ crypto.market_cap }}</p>
-     </li>
-   </ul>
- </div>
+  <h1>Crypto Tracker</h1>
+
+  <div v-if="error">
+    <p class="error">{{ error }}</p>
+  </div>
+
+  <div v-else>
+    <ul>
+      <li v-for="crypto in cryptoList" :key="crypto.id">
+        <p>{{ crypto.name }} ({{ crypto.symbol }})</p>
+        <p>Price: ${{ crypto.current_price }}</p>
+        <p>Market Cap: ${{ crypto.market_cap }}</p>
+      </li>
+    </ul>
+  </div>
 </template>
+
+<style>
+  .error {
+    color: red;
+  }
+</style> 
